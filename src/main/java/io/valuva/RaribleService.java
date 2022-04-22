@@ -1,12 +1,16 @@
 package io.valuva;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.ValueNode;
 import io.quarkus.cache.CacheResult;
 import io.quarkus.logging.Log;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import javax.ws.rs.BadRequestException;
@@ -20,6 +24,9 @@ import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class RaribleService {
+    @Inject
+    @RestClient
+    NeuronClient neuronClient;
     private Client client;
     private WebTarget baseTarget;
 
@@ -151,7 +158,7 @@ public class RaribleService {
         return list.parallelStream().filter(x -> x.getItems() != null && !x.getItems().isEmpty()).flatMap(x -> x.getItems().parallelStream().map(q -> new FinalResult(q.getCollection(), q.getId(), q.getBestSellOrder().getMakePriceUsd(), q.getRare(), q.getMeta().getAttributes()))).distinct().collect(Collectors.toList());
     }
 
-    public Item getItemsByUrl(@NotBlank String url) {
+    public NeuronModel predictPrice(@NotBlank String url) {
         Log.info(url);
         Log.info(Arrays.toString(url.split("%2F+|\\?+|%3F")));
         url = "ETHEREUM%3A" + url.split("%2F+|\\?+|%3F")[4];
@@ -163,10 +170,19 @@ public class RaribleService {
         ObjectNode objectNode = response.readEntity(ObjectNode.class);
         String collection = objectNode.get("collection").asText();
         AllItems allItems = getItemsByCollection(collection, null, 1000);
+
         while (true) {
             Log.info(objectNode.get("id").asText());
             try {
-                return allItems.getItems().stream().filter(x -> x.getId().equalsIgnoreCase(objectNode.get("id").asText())).findFirst().get();
+                Item item = allItems.getItems().stream().filter(x -> x.getId().equalsIgnoreCase(objectNode.get("id").asText())).findFirst().get();
+                NeuronRequest neuronRequest = NeuronRequest.builder()
+                        .attributes(item.getMeta().getAttributes())
+                        .id(item.getId())
+                        .rare(item.getRare())
+                        .collection(item.getCollection())
+                        .build();
+                ValueNode valueNode = new ObjectMapper().createObjectNode().pojoNode(neuronRequest);
+                return neuronClient.getResult(valueNode);
             } catch (NoSuchElementException e) {
                 allItems = getItemsByCollection(collection, allItems.getContinuation(), 1000);
             }
