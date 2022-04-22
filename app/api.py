@@ -25,7 +25,7 @@ JSON_ATTRIBUTES = {
 }
 
 
-@app.get("/predict_price/")
+@app.post("/predict_price/")
 async def predict_price(request: Request, response: Response):
     response.headers['Access-Control-Allow-Origin'] = '*'
     nft_json = await request.json()
