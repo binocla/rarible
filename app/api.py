@@ -25,7 +25,7 @@ JSON_ATTRIBUTES = {
 }
 
 
-@app.post("/predict_price/")
+@app.post("/predict_price")
 async def predict_price(request: Request, response: Response):
     response.headers['Access-Control-Allow-Origin'] = '*'
     nft_json = await request.json()
@@ -41,6 +41,9 @@ async def predict_price(request: Request, response: Response):
     nft_id = nft_json['id']
     rare = nft_json['rare']
     attributes = nft_json['attributes']
+    attributes_count = len(attributes)
+
+
 
     predicted_price = 0
 
