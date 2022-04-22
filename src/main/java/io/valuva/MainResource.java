@@ -39,10 +39,10 @@ public class MainResource {
                                       @QueryParam("sizeOfItems") @DefaultValue("50") @Positive Integer sizeOfItems) {
         return raribleService.getAllItems(sizeOfCollections, sizeOfItems);
     }
-    @Path("/itemsByUrl")
+    @Path("/predictPrice")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Item getAllItems(@QueryParam("url") @Encoded String url) {
-        return raribleService.getItemsByUrl(url);
+    public NeuronModel predictPrice(@QueryParam("url") @Encoded String url) {
+        return raribleService.predictPrice(url);
     }
 }
