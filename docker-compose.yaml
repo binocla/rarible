@@ -1,0 +1,17 @@
+version: "3.6"
+
+services:
+
+  ml-api-nft:
+    restart: always
+    env_file:
+      - .env
+    build:
+      context: ./
+      network: host
+    image: ml-api-nft:latest
+    ports: 
+      - 6677:6677
+    volumes:
+      - ./:/app
+      

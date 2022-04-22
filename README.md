@@ -1,1 +1,1 @@
-# rarible
+# This is async api server with data analysis and machine learning algorithms
