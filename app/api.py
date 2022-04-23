@@ -36,16 +36,32 @@ async def predict_price(request: Request, response: Response):
         nft_json['rare'] = float(nft_json['rare'])
     except:
         raise HTTPException(status_code=400, detail='Error in input json!')
-    
+
+    # load vectors
+    nfts = pd.read_csv('./data/nft.csv', index_col=0)
+    attrs_all = nfts.columns[:-3].tolist()
+    n = len(attrs_all)
+
+    # prepare vector
     collection = nft_json['collection']
     nft_id = nft_json['id']
-    rare = nft_json['rare']
     attributes = nft_json['attributes']
+    nft_rare = nft_json['rare']
     attributes_count = len(attributes)
 
+    attr_vector = np.full((n + 2,), -1, dtype='float')
+    for attr in attributes:
+        attr_key = attr['key'].lower()
+        attr_rare = attr['rare']
+        attr_index = attrs_all.index(attr_key)
+        attr_vector[attr_index] = attr_rare
+    attr_vector[-2] = nft_rare
+    attr_vector[-1] = attributes_count
 
-
-    predicted_price = 0
+    d = np.sum((nfts.values[:, :-1] - attr_vector)**2, axis=1)
+    k_idx = np.argsort(d)[1:31]
+    knn_pred_log = np.mean(nfts.iloc[k_idx]['log_y'].values)
+    predicted_price = np.expm1(knn_pred_log)
 
     return {'collection': collection, 'nft_id': nft_id, 'predicted_price': predicted_price}
     
