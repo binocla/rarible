@@ -56,6 +56,7 @@ public class RaribleService {
         }
         return allCollections;
     }
+
     @CacheResult(cacheName = "collection")
     public AllItems getItemsByCollection(@NotBlank String collection, String continuation, @Positive Integer size) {
         AllItems allItems;
@@ -68,6 +69,9 @@ public class RaribleService {
                     .request()
                     .get();
             allItems = response.readEntity(AllItems.class);
+            if (allItems.getItems() == null) {
+                return new AllItems();
+            }
             Map<Attribute, Long> totalMap = allItems.getItems().stream()
                     .filter(x -> x.getMeta() != null)
                     .flatMap(x -> x.getMeta().getAttributes().stream())
@@ -174,6 +178,9 @@ public class RaribleService {
         while (true) {
             Log.info(objectNode.get("id").asText());
             try {
+                if (allItems.getItems() == null) {
+                    throw new BadRequestException("Try to use another NFT :(");
+                }
                 Item item = allItems.getItems().stream().filter(x -> x.getId().equalsIgnoreCase(objectNode.get("id").asText())).findFirst().get();
                 NeuronRequest neuronRequest = NeuronRequest.builder()
                         .attributes(item.getMeta().getAttributes())
@@ -182,6 +189,7 @@ public class RaribleService {
                         .collection(item.getCollection())
                         .build();
                 ValueNode valueNode = new ObjectMapper().createObjectNode().pojoNode(neuronRequest);
+                Log.info(valueNode);
                 return neuronClient.getResult(valueNode);
             } catch (NoSuchElementException e) {
                 allItems = getItemsByCollection(collection, allItems.getContinuation(), 1000);
