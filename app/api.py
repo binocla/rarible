@@ -59,9 +59,8 @@ async def predict_price(request: Request, response: Response):
     attr_vector[-1] = attributes_count
 
     d = np.sum((nfts.values[:, :-1] - attr_vector)**2, axis=1)
-    k_idx = np.argsort(d)[1:31]
-    knn_pred_log = np.mean(nfts.iloc[k_idx]['log_y'].values)
-    predicted_price = np.expm1(knn_pred_log)
+    k_idx = np.argsort(d)[1:11]
+    predicted_price = np.mean(nfts.iloc[k_idx]['y'].values)
 
     return {'collection': collection, 'nft_id': nft_id, 'predicted_price': predicted_price}
     
