@@ -53,8 +53,9 @@ async def predict_price(request: Request, response: Response):
     for attr in attributes:
         attr_key = attr['key'].lower()
         attr_rare = attr['rare']
-        attr_index = attrs_all.index(attr_key)
-        attr_vector[attr_index] = attr_rare
+        if attr_key in attrs_all:
+            attr_index = attrs_all.index(attr_key)
+            attr_vector[attr_index] = attr_rare
     attr_vector[-2] = nft_rare
     attr_vector[-1] = attributes_count
 
