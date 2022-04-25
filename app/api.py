@@ -38,7 +38,7 @@ async def predict_price(request: Request, response: Response):
         raise HTTPException(status_code=400, detail='Error in input json!')
 
     # load vectors
-    nfts = pd.read_csv('./data/nft.csv', index_col=0)
+    nfts = pd.read_csv('./data/nft new.csv', index_col=0)
     attrs_all = nfts.columns[:-3].tolist()
     n = len(attrs_all)
 
