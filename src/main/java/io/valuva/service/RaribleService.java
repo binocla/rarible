@@ -207,8 +207,9 @@ public class RaribleService {
     @CacheResult(cacheName = "predictPrice")
     public NeuronModel predictPrice(@NotBlank String url) {
         Log.info(url);
-        Log.info(Arrays.toString(url.split("%2F+|\\?+|%3F")));
-        url = "ETHEREUM%3A" + url.split("%2F+|\\?+|%3F")[4];
+        String[] ar = url.split("%2F+|\\?|%3F");
+        Log.info(Arrays.toString(ar));
+        url = ar[3] + "%3A" + url.split("%2F+|\\?+|%3F")[4];
         Log.info(url);
         Response response = baseTarget.path("items")
                 .path(url)
