@@ -49,7 +49,7 @@ public class RaribleService {
         try {
             Response response = baseTarget.path("collections")
                     .path("all")
-                    .queryParam("size", 1000)
+                    .queryParam("size", 500)
                     .request()
                     .get();
             allCollections = response.readEntity(AllCollections.class);
@@ -63,7 +63,7 @@ public class RaribleService {
                 Response nextResponse = baseTarget.path("collections")
                         .path("all")
                         .queryParam("continuation", URLEncoder.encode(allCollections.getContinuation(), StandardCharsets.UTF_8))
-                        .queryParam("size", 1000)
+                        .queryParam("size", 500)
                         .request()
                         .get();
                 AllCollections newResponse = nextResponse.readEntity(AllCollections.class);
@@ -199,9 +199,8 @@ public class RaribleService {
             list.add(allItems);
         }
         List<FinalResult> ls = list.parallelStream().filter(x -> x.getItems() != null && !x.getItems().isEmpty()).flatMap(x -> x.getItems().parallelStream().map(q -> new FinalResult(q.getCollection(), q.getId(), q.getBestSellOrder() == null ? null : q.getBestSellOrder().getMakePriceUsd(), q.getRare(), q.getMeta().getAttributes(), null, q.getCreators(), q.getBestBidOrder(), q.getAuctions(), q.getTotalStock(), q.getLastSale()))).distinct().collect(Collectors.toList());
-        PrintWriter pw = new PrintWriter("dataNew.json");
-        pw.println(new ObjectMapper().writeValueAsString(ls));
-        pw.close();
+        File pw = new File("dataNew.json");
+        new ObjectMapper().writeValue(pw, ls);
         return ls;
     }
 

@@ -2,13 +2,10 @@ package io.valuva.resource;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.smallrye.common.constraint.Nullable;
 import io.valuva.models.*;
 import io.valuva.service.RaribleService;
 
 import javax.inject.Inject;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Positive;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.io.File;
@@ -23,24 +20,7 @@ public class MainResource {
     @Inject
     RaribleService raribleService;
 
-    @Path("/collections")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public AllCollections getAllCollections() {
-        return raribleService.getAllCollections();
-    }
-
-    @Path("/itemsByCollection")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public AllItems getItemsByCollections(@QueryParam("collection") @NotBlank @Encoded String collection,
-                                          @QueryParam("continuation") @Nullable String continuation,
-                                          @QueryParam("size") @Nullable @Positive Integer size) {
-        return raribleService.getItemsByCollection(collection, continuation, size);
-    }
-
-    @Path("/parse")
-    public void parse() throws IOException {
+    private void parse() throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         List<FinalResultMutable> list1 = objectMapper.readValue(new File("parsed_data.json"), new TypeReference<>() {
         });
@@ -95,12 +75,6 @@ public class MainResource {
 
     }
 
-    @Path("/allItems")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<FinalResult> getAllItems() {
-        return raribleService.getAllItems();
-    }
     @Path("/predictPrice")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -108,10 +82,4 @@ public class MainResource {
         return raribleService.predictPrice(url);
     }
 
-    @Path("/getAll")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public AllItems allItems(@QueryParam("collection") @NotBlank @Encoded String collection) {
-        return raribleService.allItems(collection);
-    }
 }
