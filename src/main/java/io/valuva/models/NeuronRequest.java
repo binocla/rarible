@@ -1,4 +1,4 @@
-package io.valuva;
+package io.valuva.models;
 
 import lombok.Builder;
 import lombok.Data;

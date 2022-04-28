@@ -1,6 +1,7 @@
-package io.valuva;
+package io.valuva.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -19,4 +20,9 @@ public class Item {
     private Integer uniqueProperties;
     private Double rare;
     private BestSellOrder bestSellOrder;
+    private JsonNode creators;
+    private JsonNode bestBidOrder;
+    private JsonNode auctions;
+    private Integer totalStock;
+    private JsonNode lastSale;
 }

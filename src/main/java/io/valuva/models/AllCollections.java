@@ -1,4 +1,4 @@
-package io.valuva;
+package io.valuva.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
@@ -14,6 +14,7 @@ public class AllCollections {
     @Positive
     private Integer total;
     private Integer remaining;
+    private String continuation;
     @NotNull
     private List<Collection> collections;
 }

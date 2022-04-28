@@ -1,4 +1,4 @@
-package io.valuva;
+package io.valuva.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
@@ -17,6 +17,4 @@ public class AllItems {
     private String continuation;
     @NotNull
     private List<Item> items;
-
-
 }
