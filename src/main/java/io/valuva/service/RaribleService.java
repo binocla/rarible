@@ -208,8 +208,13 @@ public class RaribleService {
     public NeuronModel predictPrice(@NotBlank String url) {
         Log.info(url);
         String[] ar = url.split("%2F+|\\?|%3F");
+
         Log.info(Arrays.toString(ar));
-        url = ar[3] + "%3A" + url.split("%2F+|\\?+|%3F")[4];
+        if (ar.length == 6) {
+            url = ar[4] + "%3A" + ar[5];
+        } else {
+            url = ar[3] + "%3A" + ar[4];
+        }
         Log.info(url);
         Response response = baseTarget.path("items")
                 .path(url)
